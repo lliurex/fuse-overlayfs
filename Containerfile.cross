@@ -1,0 +1,18 @@
+FROM --platform=$BUILDPLATFORM tonistiigi/xx:1.1.0 AS xx
+FROM --platform=$BUILDPLATFORM ubuntu:22.04 AS fuse-overlayfs
+RUN apt-get update && \
+  apt-get install --no-install-recommends -y \
+  git make automake autoconf pkgconf file go-md2man
+COPY . /fuse-overlayfs
+WORKDIR /fuse-overlayfs
+COPY --from=xx / /
+ARG TARGETPLATFORM
+ENV DEBIAN_FRONTEND=noninteractive
+RUN xx-apt-get install -y gcc libfuse3-dev
+RUN ./autogen.sh && \
+  LIBS="-ldl" LDFLAGS="-static" ./configure --host=$(xx-info) && \
+  make && mkdir /out && cp fuse-overlayfs /out && \
+  file /out/fuse-overlayfs | grep "statically linked"
+
+FROM scratch
+COPY --from=fuse-overlayfs /out/fuse-overlayfs /fuse-overlayfs
