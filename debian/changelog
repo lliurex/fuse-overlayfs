@@ -1,3 +1,9 @@
+fuse-overlayfs (1.10-1.1) focal; urgency=medium
+
+  * Focal backport
+
+ -- M.Angel Juan <m.angel.juan@gmail.com>  Sun, 19 Nov 2023 12:43:42 +0100
+
 fuse-overlayfs (1.10-1) unstable; urgency=medium
 
   * New upstream release.
